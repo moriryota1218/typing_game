@@ -10,16 +10,16 @@
     'star',
     'eagle',
   ]
-  // タイプするワードをランダムに指定
-  let word = words[Math.floor(Math.random() * words.length)];
-  // 何番目を今、打つべきか変数で管理
-  let loc = 0;
-  // scoreやmissの数を管理する変数を宣言
-  let score = 0;
-  let miss = 0;
+  //各変数を宣言
+  let word;
+  let loc;
+  let score;
+  let miss;
   // 時間制限を設ける
-  const timeLimit = 3 * 1000;
+  const timeLimit = 10 * 1000;
   let startTime;
+  // ゲームが始まっているか変数で管理
+  let isPlaying = false;
 
   // html要素を取得
   const target = document.getElementById('target');
@@ -36,6 +36,14 @@
     // substring()で部分文字列を取得
     target.textContent = placeholder + word.substring(loc);
   }
+  // 正答率を表示する
+  function showResult() {
+    const accuracy = score + miss === 0 ? 0 : score / (score + miss) * 100;
+    // テンプレートリテラルを使い表示
+    alert(`${score} letters, ${miss} misses, ${accuracy.toFixed(2)}% accuracy!`);
+
+
+  }
 
   // 残り時間の計算
   function updateTimer() {
@@ -48,13 +56,38 @@
     }, 10);
 
     if(timeLeft < 0) {
+      isPlaying = false;
       clearTimeout(timeoutId);
-      alert('Game Over');
-    }
+      // タイマーの調整
+      setTimeout(() => {
+        showResult();
+      }, 100);
 
+      // ゲームオーバーになった時のリプレイの処理
+      timerLabel.textContent = '0.00';
+      target.textContent = 'click to replay';
+
+    }
   }
   // クリックするとゲームスタート
   window.addEventListener('click', () => {
+    if (isPlaying === true) {
+      return;
+    }
+    isPlaying = true;
+
+    // 値の初期化
+    loc = 0;
+    score = 0;
+    miss = 0;
+    scoreLabel.textContent = score;
+    missLabel.textContent = miss;
+
+    // ワードをランダムに表示する
+    word = words[Math.floor(Math.random() * words.length)];
+
+
+
     updateTarget();
     // 時間経過を指定
     startTime = Date.now();
@@ -62,7 +95,10 @@
   });
 
   window.addEventListener('keyup', e => {
-    // console.log(e.key);
+    // タイピングミスの調整
+    if (isPlaying !== true) {
+      return;
+    }
     // 変数loc番目の文字が、タイプされたキーと同じか判定する
     if (e.key === word[loc]) {
       // console.log('score');

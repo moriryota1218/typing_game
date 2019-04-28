@@ -9,9 +9,19 @@ body {
   letter-spacing: 5px;
 }
 
+#score {
+  color: #1E90FF;
+}
 
+#miss {
+  color: #FF4500;
+}
+
+#timer {
+  color: #3CB371;
+}
 
 .info {
   font-size: 24px;
-  color: #ccc;
+  color: #696969;
 }
